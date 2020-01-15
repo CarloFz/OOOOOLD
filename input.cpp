@@ -9,10 +9,10 @@ int inputProcess(int argc, char** argv)
 	}
 	//验证第一个参数-c/-s
 	int type = 0; //-c = 1; -s = 2;
-	if (argv[1] == "-c") {
+	if (strcmp(argv[1],"-c") == 0) {
 		type = 1;
 	}
-	else if (argv[1] == "-s")
+	else if (strcmp(argv[1], "-s") == 0)
 	{
 		type = 2;
 	}
@@ -27,7 +27,7 @@ int inputProcess(int argc, char** argv)
 	if (type == 1)//-c
 	{
 		string countS = argv[2];
-		for (int i = 0; i < countS.length; i++)
+		for (unsigned int i = 0; i < countS.length(); i++)
 		{
 			if (countS[i] > '9' || countS[i] < '0')
 			{
@@ -37,7 +37,7 @@ int inputProcess(int argc, char** argv)
 	}
 	else if (type == 2) {//-s
 		FILE* p = NULL;
-		p = fopen(argv[2], "r");
+		fopen_s(&p, argv[2], "r");
 		if (p == NULL)
 		{
 			return -1;
