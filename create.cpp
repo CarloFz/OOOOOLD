@@ -24,6 +24,7 @@ void write(char* buf[], int buflen)
 					fprintf(p, "\n");
 				}
 			}
+			fprintf(p, "\n");
 		}
 		free(buf[i]);
 	}
@@ -143,8 +144,7 @@ int create(int count)
 									swapChar(&matrix[i][7], &matrix[i][8]);
 								}
 							}
-							//////
-							
+							//////开始生成全排列
 							int index[8] = { -1,-1,-1,-1,-1,-1,-1,-1 };
 							int pos[9];
 							for (pos[1] = 0; pos[1] < 8; pos[1]++)
@@ -164,6 +164,7 @@ int create(int count)
 														for (pos[8] = 0; pos[8] < 1; pos[8]++)
 														{
 															//计算排列
+															//映射信息存在index中
 															index[pos[1]] = 1;
 															for (int i = 2; i <= 8; i++) {
 																int countPos = 0;
@@ -179,6 +180,7 @@ int create(int count)
 																	}
 																}
 															}
+															//生成一个终局end
 															char* end = (char*)malloc(sizeof(char) * 81);
 															for (int i = 0; i < 9; i++)
 															{
@@ -191,6 +193,7 @@ int create(int count)
 																	}
 																}
 															}
+															//将终局存在IO缓冲中
 															buf[buflen++] = end;
 															countRes++;
 															if (buflen >= MAX_BUFLEN) {
@@ -222,7 +225,5 @@ int create(int count)
 			}
 		}
 	}
-
-
 	return 0;
 }
