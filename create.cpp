@@ -5,12 +5,11 @@ void swapChar(char* a, char* b)
 	*a = *b;
 	*b = temp;
 }
-
-void write(char* buf[], int buflen)
+void write(char* buf[], int bufLen, bool fin)
 {
 	FILE* p = NULL;
-	fopen_s(&p, "./test.txt", "a+");
-	for (int i = 0; i < buflen; i++)
+	fopen_s(&p, CREATE_FILENAME, "a+");
+	for (int i = 0; i < bufLen; i++)
 	{
 		for (int j = 0; j < 9; j++)
 		{
@@ -20,10 +19,12 @@ void write(char* buf[], int buflen)
 				if (k != 8) {
 					fprintf(p, " ");
 				}
-				else {
-					fprintf(p, "\n");
-				}
 			}
+			if (!(j == 8 && fin && i == bufLen - 1)) {
+				fprintf(p, "\n");
+			}
+		}
+		if (!fin || i != bufLen - 1) {
 			fprintf(p, "\n");
 		}
 		free(buf[i]);
@@ -32,6 +33,10 @@ void write(char* buf[], int buflen)
 }
 int create(int count)
 {
+	//覆盖之前的文件
+	FILE* p = NULL;
+	fopen_s(&p, CREATE_FILENAME, "w");
+	fclose(p);
 	char* buf[MAX_BUFLEN];
 	int buflen = 0;
 	int countRes = 0;
@@ -196,15 +201,16 @@ int create(int count)
 															//将终局存在IO缓冲中
 															buf[buflen++] = end;
 															countRes++;
-															if (buflen >= MAX_BUFLEN) {
-																write(buf, buflen);
-																buflen = 0;
-															}
 															if (countRes == count) {
 																if (buflen != 0) {
-																	write(buf, buflen);
+																	write(buf, buflen, true);
+																	buflen = 0;
 																}
 																return 0;
+															}
+															if (buflen >= MAX_BUFLEN) {
+																write(buf, buflen, false);
+																buflen = 0;
 															}
 															for (int i = 0; i < 8; i++)
 															{
@@ -225,5 +231,6 @@ int create(int count)
 			}
 		}
 	}
+	
 	return 0;
 }

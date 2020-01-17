@@ -1,4 +1,5 @@
 #include "header.h"
+//初始化所有位置的可能的答案的集合
 void initPossibleSet(int matrix[9][9], vector<int> possibleSet[9][9])
 {
     for (int i = 0; i < 9; i++)
@@ -8,6 +9,7 @@ void initPossibleSet(int matrix[9][9], vector<int> possibleSet[9][9])
         }
     }
 }
+//更新某一个位置的可能的答案的集合
 void updatePossibleSet(int matrix[9][9], vector<int> possibleSet[9][9], int row, int col)
 {
     possibleSet[row][col].clear();
@@ -35,10 +37,10 @@ void updatePossibleSet(int matrix[9][9], vector<int> possibleSet[9][9], int row,
         }
     }
 }
-bool checkPossibleSet(int matrix[9][9], vector<int> possibleSet[9][9])
+//检查是否有能够唯一确定的空位
+void checkPossibleSet(int matrix[9][9], vector<int> possibleSet[9][9])
 {
     bool stepOut = true;
-    bool res = false;
     while (stepOut)
     {
         stepOut = false;
@@ -46,7 +48,6 @@ bool checkPossibleSet(int matrix[9][9], vector<int> possibleSet[9][9])
         {
             for (int j = 0; j < 9; j++) {
                 if (possibleSet[i][j].size() == 1) {
-                    res = true;
                     stepOut = true;
                     matrix[i][j] = possibleSet[i][j][0];
                     possibleSet[i][j].clear();
@@ -60,8 +61,8 @@ bool checkPossibleSet(int matrix[9][9], vector<int> possibleSet[9][9])
             }
         }
     }
-    return res;
 }
+//检查数独解是否正确（DEBUG用）
 bool checkTrue(int matrix[9][9])
 {
     for (int i = 0; i < 9; i++) {
@@ -123,6 +124,7 @@ bool checkTrue(int matrix[9][9])
     }
     return true;
 }
+//回溯法求解数独
 bool backTrace(int row, int col, int matrix[9][9], vector<int> possibleSet[9][9], int nextPos[9][9][2]) {
     if (row == -1 && col == -1) {
         //已经成功了，打印数组即可
@@ -145,16 +147,15 @@ bool backTrace(int row, int col, int matrix[9][9], vector<int> possibleSet[9][9]
 int solve(char* path)
 {
     //读文件
-    clock_t start = clock();
     ifstream fin(path, std::ios::binary);
     int bufLen = static_cast<unsigned int>(fin.seekg(0, std::ios::end).tellg());
     vector<char> buf(bufLen);
     fin.seekg(0, std::ios::beg).read(&buf[0], static_cast<std::streamsize>(buf.size()));
     fin.close();
-
     int bufPoint = 0;
     while (bufPoint < bufLen)
     {
+        int bufPointStart = bufPoint;
         //取出一个数独题目
         int matrix[9][9];
         vector<int> possibleSet[9][9];
@@ -167,9 +168,10 @@ int solve(char* path)
                 possibleSet[i][j].clear();
             }
         }
-        //ini posSet
+        //先把答案唯一的空位填上，降低递归的复杂度
         initPossibleSet(matrix, possibleSet);
         checkPossibleSet(matrix, possibleSet);
+        //将空位的位置存成表，加快查询速度
         int nextPos[9][9][2];
         int startPos[2] = { -1, -1 };
         for (int i = 8; i >= 0; i--)
@@ -184,25 +186,24 @@ int solve(char* path)
                 }
             }
         }
+        //回溯法求解
         backTrace(startPos[0], startPos[1], matrix, possibleSet, nextPos);
-        if (!checkTrue(matrix)) {
-            for (int i = 0; i < 9; i++)
-            {
-                for (int j = 0; j < 9; j++)
-                {
-                    printf("%c", matrix[i][j] + '0');
-                    if (j != 8)
-                    {
-                        printf(" ");
-                    }
-                }
-                printf("\n");
-            }
-            printf("\n");
+        if (bufPoint != bufLen - 1) {
+            bufPoint++;
         }
-        bufPoint++;
+        //存储解
+        for (int i = 0; i < 9; i++)
+        {
+            for (int j = 0; j < 9; j++)
+            {
+                buf[bufPointStart] = matrix[i][j] + '0';
+                bufPointStart += 2;
+            }
+        }
     }
-    clock_t end = clock();
-    cout << "time : " << ((double)end - start) / CLOCKS_PER_SEC << "s\n" << endl;
+    //写文件
+    ofstream fout(SOLVE_FILENAME, std::ios::binary);
+    fout.seekp(0).write(&buf[0], bufLen);
+    fout.close();
 	return 0;
 }

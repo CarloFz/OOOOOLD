@@ -3,6 +3,7 @@
 
 int main(int argc, char** argv)
 {
+	clock_t start = clock();
 	// ‰»Î¥¶¿Ì
 	int type = inputProcess(argc, argv);
 	if (type == -1)
@@ -20,5 +21,7 @@ int main(int argc, char** argv)
 	{
 		solve(argv[2]);
 	}
+	clock_t end = clock();
+	cout << "time : " << ((double)end - start) / CLOCKS_PER_SEC << "s\n" << endl;
 	return 0;
 }
