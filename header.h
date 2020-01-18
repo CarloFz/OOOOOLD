@@ -20,8 +20,8 @@ int solve(char *path);
 void swapChar(char* a, char* b);//交换某两个字符的位置
 void write(char* buf[], int buflen, bool fin);//将缓冲的内容写入文件
 
-void initPossibleSet(int matrix[9][9], vector<int> possibleSet[9][9]);
-void updatePossibleSet(int matrix[9][9], vector<int> possibleSet[9][9], int row, int col);
-void checkPossibleSet(int matrix[9][9], vector<int> possibleSet[9][9]);
-bool checkTrue(int matrix[9][9]);
-bool backTrace(int row, int col, int matrix[9][9], vector<int> possibleSet[9][9], int nextPos[9][9][2]);
+void initPossibleSet(int matrix[9][9], vector<int> possibleSet[9][9]);//初始化所有位置的可能的答案的集合
+void updatePossibleSet(int matrix[9][9], vector<int> possibleSet[9][9], int row, int col);//更新某一个位置的可能的答案的集合
+void checkPossibleSet(int matrix[9][9], vector<int> possibleSet[9][9]);//检查是否有能够唯一确定的空位
+bool checkTrue(int matrix[9][9]);//检查数独解是否正确（DEBUG用）
+bool backTrace(int row, int col, int matrix[9][9], vector<int> possibleSet[9][9], int nextPos[9][9][2]);//回溯法求解数独

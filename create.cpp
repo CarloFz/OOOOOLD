@@ -15,29 +15,40 @@ void write(char* buf[], int bufLen, bool fin)
 		{
 			for (int k = 0; k < 9; k++)
 			{
-				fwrite(&buf[i][j * 9 + k], sizeof(char), 1, p);
-				if (k != 8) {
-					fprintf(p, " ");
+				if (p != 0) {
+					fwrite(&buf[i][j * 9 + k], sizeof(char), 1, p);
+					if (k != 8) {
+						fprintf(p, " ");
+					}
 				}
 			}
 			if (!(j == 8 && fin && i == bufLen - 1)) {
-				fprintf(p, "\n");
+				if (p != 0) {
+					fprintf(p, "\n");
+				}
 			}
 		}
 		if (!fin || i != bufLen - 1) {
-			fprintf(p, "\n");
+			if (p != 0) {
+				fprintf(p, "\n");
+			}
 		}
 		free(buf[i]);
 	}
-	fclose(p);
+	if (p != 0) {
+		fclose(p);
+	}
 }
 int create(int count)
 {
 	//覆盖之前的文件
 	FILE* p = NULL;
 	fopen_s(&p, CREATE_FILENAME, "w");
-	fclose(p);
-	char* buf[MAX_BUFLEN];
+	if (p != 0) {
+		fclose(p);
+	}
+	char** buf;
+	buf = (char**)malloc(sizeof(char*) * MAX_BUFLEN);
 	int buflen = 0;
 	int countRes = 0;
 	if (count > MAX_CREATE)
@@ -191,15 +202,21 @@ int create(int count)
 															{
 																for (int j = 0; j < 9; j++) {
 																	if (matrix[i][j] == 'a') {
-																		end[i * 9 + j] = '2';
+																		if (end != 0) {
+																			end[i * 9 + j] = '2';
+																		}
 																	}
 																	else {
-																		end[i * 9 + j] = index[matrix[i][j] - 'a' - 1] + '1' - 1;
+																		if (end != 0) {
+																			end[i * 9 + j] = index[matrix[i][j] - 'a' - 1] + '1' - 1;
+																		}
 																	}
 																}
 															}
 															//将终局存在IO缓冲中
-															buf[buflen++] = end;
+															if (buf != 0) {
+																buf[buflen++] = end;
+															}
 															countRes++;
 															if (countRes == count) {
 																if (buflen != 0) {
